@@ -71,7 +71,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
             child: Column(
               children: [
                 const SizedBox(height: 30),
-                // 🌈 Imagen flotante animada
+
                 AnimatedBuilder(
                   animation: _controller,
                   builder: (_, child) {
@@ -96,7 +96,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
                   ),
                 ),
                 const SizedBox(height: 24),
-                // 📖 Descripción
+
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -121,7 +121,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen>
                   ),
                 ),
                 const Spacer(),
-                // 🎯 Botón principal
+
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(

@@ -38,14 +38,12 @@ class _ProgressScreenState extends State<ProgressScreen> {
     setState(() => _progress = data);
   }
 
-  /// 🧠 Genera feedback basado en desempeño promedio
   String _generateAdvice(ProgressModel data) {
     final avg = (data.volumeScore + data.toneScore + data.breathingScore) / 3;
-    if (avg >= 0.8) return "Excelente desempeño 🎉 ¡Sigue así!";
-    if (avg >= 0.6) return "Vas muy bien 💪, sigue practicando tu respiración.";
-    if (avg >= 0.4)
-      return "Buen inicio 👏, trata de mantener un ritmo constante.";
-    return "Necesitas mejorar 💬. Intenta practicar más seguido y con calma.";
+    if (avg >= 0.8) return "Excelente desempeño ¡Sigue así!";
+    if (avg >= 0.6) return "Vas muy bien, sigue practicando tu respiración.";
+    if (avg >= 0.4) return "Buen inicio, trata de mantener un ritmo constante.";
+    return "Necesitas mejorar. Intenta practicar más seguido y con calma.";
   }
 
   @override
@@ -104,7 +102,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
               children: [
                 const SizedBox(height: 10),
                 Text(
-                  "¡Sigue practicando! 💪\nTu avance mejora cada día.",
+                  "¡Sigue practicando! \nTu avance mejora cada día.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20 * _textScale,
@@ -115,7 +113,6 @@ class _ProgressScreenState extends State<ProgressScreen> {
                 ),
                 const SizedBox(height: 30),
 
-                // 📊 Tarjetas de progreso reales
                 ...items.map(
                   (e) => _MetricCard(
                     label: e.$1,
@@ -126,7 +123,6 @@ class _ProgressScreenState extends State<ProgressScreen> {
 
                 const SizedBox(height: 24),
 
-                // 💡 Consejo dinámico según desempeño
                 Container(
                   padding: const EdgeInsets.all(18),
                   decoration: BoxDecoration(
@@ -151,7 +147,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          "💡 Consejo del día:\n${_generateAdvice(_progress!)}",
+                          "Consejo del día:\n${_generateAdvice(_progress!)}",
                           style: TextStyle(
                             fontSize: 16 * _textScale,
                             color: AppColors.textDark,

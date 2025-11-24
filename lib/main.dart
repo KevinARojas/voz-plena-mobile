@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+
 import 'screens/splash_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/login_screen.dart';
@@ -13,7 +15,13 @@ import 'screens/session_result_screen.dart';
 import 'screens/therapist_mode_screen.dart';
 import 'screens/exercises/exercises_menu_screen.dart';
 
-void main() => runApp(const VozPlenaApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp();
+
+  runApp(const VozPlenaApp());
+}
 
 class VozPlenaApp extends StatelessWidget {
   const VozPlenaApp({super.key});
@@ -52,7 +60,6 @@ class VozPlenaApp extends StatelessWidget {
           feedback: '¡Excelente control de voz!',
         ),
         '/therapist': (_) => const TherapistModeScreen(),
-        // '/nlp': (_) => const NLPAnalysisScreen(),
       },
     );
   }

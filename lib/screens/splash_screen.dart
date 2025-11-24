@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:voz_plena/screens/home_screen.dart';
+import 'package:voz_plena/screens/login_screen.dart';
 import '../utils/colors.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -21,7 +23,6 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
-    // 🎞 Control de fade del logo
     _fadeController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
@@ -31,7 +32,6 @@ class _SplashScreenState extends State<SplashScreen>
       curve: Curves.easeInOut,
     );
 
-    // 💫 Control del efecto respirante (degradado animado)
     _breathingController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 5),
@@ -49,15 +49,25 @@ class _SplashScreenState extends State<SplashScreen>
 
     _fadeController.forward();
 
-    // ⏱ Ir al home después de 3.5 segundos
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
-        );
-      }
-    });
+    Future.delayed(const Duration(seconds: 3), _checkUser);
+  }
+
+  Future<void> _checkUser() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (!mounted) return;
+
+    if (user != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+      );
+    }
   }
 
   @override
@@ -90,7 +100,6 @@ class _SplashScreenState extends State<SplashScreen>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // 🌿 Logo de Voz Plena
                     Image.asset('assets/icon/logoo-splash.png', width: 180),
                     const SizedBox(height: 24),
                     const Text(

@@ -31,15 +31,14 @@ class _ToneScreenState extends State<ToneScreen> {
     super.initState();
     AIService.init();
 
-    // ✅ Initialize microphone before enabling button
     Future.microtask(() async {
       try {
         await Future.delayed(const Duration(milliseconds: 800));
         await _microfono.init();
         setState(() => _micListo = true);
-        print('🎤 Micrófono listo para usar');
+        print('Microphone ready for use');
       } catch (e) {
-        print('❌ Error al inicializar el micrófono: $e');
+        print('error initializing microphone: $e');
       }
     });
   }
@@ -97,7 +96,6 @@ class _ToneScreenState extends State<ToneScreen> {
     }
   }
 
-  /// 🎵 Convert frequency (Hz) to note (ex: 440Hz → A4)
   String _notaDesdeFrecuencia(double freq) {
     if (freq <= 0) return "-";
     const notas = [
@@ -114,19 +112,18 @@ class _ToneScreenState extends State<ToneScreen> {
       'A#',
       'B',
     ];
-    const base = 440.0; // A4
+    const base = 440.0;
     final semitonos = 12 * (log(freq / base) / ln2);
     final indice = (semitonos.round() + 9) % 12;
     final octava = 4 + ((semitonos.round() + 9) ~/ 12);
     return "${notas[indice]}$octava";
   }
 
-  /// 🎨 Color dinámico según estabilidad del tono
   Color _colorPorTono() {
-    if (_frecuencia > 500) return AppColors.green; // tono agudo y estable
-    if (_frecuencia > 250) return AppColors.accent; // tono medio
-    if (_frecuencia > 60) return AppColors.red; // tono bajo
-    return Colors.grey; // sin voz detectada
+    if (_frecuencia > 500) return AppColors.green;
+    if (_frecuencia > 250) return AppColors.accent;
+    if (_frecuencia > 60) return AppColors.red;
+    return Colors.grey;
   }
 
   @override
@@ -171,7 +168,6 @@ class _ToneScreenState extends State<ToneScreen> {
                 ),
                 const SizedBox(height: 30),
 
-                // 🔵 Animated Circle showing frequency + color feedback
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 400),
                   height: 180,
@@ -271,7 +267,6 @@ class _ToneScreenState extends State<ToneScreen> {
   }
 }
 
-/// 🎚 Custom tone visualization bars
 class _BarrasTono extends CustomPainter {
   final List<double> values;
   _BarrasTono({required this.values});

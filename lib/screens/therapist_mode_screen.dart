@@ -55,7 +55,6 @@ class TherapistModeScreen extends StatelessWidget {
                 ),
               ),
               onTap: () {
-                // En futuro: abrir detalle con gráfica y observaciones
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Ver detalle de ${s['name']}')),
                 );

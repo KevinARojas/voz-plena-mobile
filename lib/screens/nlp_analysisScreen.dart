@@ -17,9 +17,8 @@ class _NLPAnalysisScreenState extends State<NLPAnalysisScreen> {
   Future<void> _analyzeAudio() async {
     setState(() => _analyzing = true);
 
-    await Future.delayed(const Duration(seconds: 2)); // Simulación
+    await Future.delayed(const Duration(seconds: 2));
 
-    // TODO: Conectar aquí tu modelo o API (Whisper, HuggingFace, etc.)
     setState(() {
       _transcription = "Hola, esto es una prueba de voz clara y pausada.";
       _emotion = "Alegre 😊";

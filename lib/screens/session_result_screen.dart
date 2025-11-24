@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import '../utils/colors.dart';
 
 class SessionResultScreen extends StatelessWidget {
-  final String type; // Ej: "Volumen", "Tono", "Respiración"
-  final double score; // 0.0 - 1.0
+  final String type;
+  final double score;
   final String feedback;
 
   const SessionResultScreen({

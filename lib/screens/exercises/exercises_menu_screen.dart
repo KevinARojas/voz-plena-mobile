@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../utils/colors.dart';
-import 'exercise_detail_screen.dart'; // ✅ importa la pantalla genérica
+import 'exercise_detail_screen.dart';
 
 class ExercisesMenuScreen extends StatelessWidget {
   const ExercisesMenuScreen({super.key});
@@ -137,7 +137,6 @@ class ExercisesMenuScreen extends StatelessWidget {
   }
 }
 
-/// ✅ Descripciones personalizadas según el ejercicio
 String _getDescription(String title) {
   switch (title) {
     case 'Ejercicio de Volumen':
@@ -151,7 +150,6 @@ String _getDescription(String title) {
   }
 }
 
-/// ✅ Selecciona una imagen según el ejercicio
 String _getImageName(String title) {
   if (title.contains('Volumen')) return 'volume.png';
   if (title.contains('Tono')) return 'tone.png';

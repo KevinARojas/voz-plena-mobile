@@ -2,10 +2,10 @@
 import 'dart:convert';
 
 class ProgressModel {
-  double volumeScore;
-  double toneScore;
-  double breathingScore;
-  DateTime lastUpdated;
+  final double volumeScore;
+  final double toneScore;
+  final double breathingScore;
+  final DateTime lastUpdated;
 
   ProgressModel({
     required this.volumeScore,
@@ -14,10 +14,10 @@ class ProgressModel {
     required this.lastUpdated,
   });
 
-  /// Promedio general del usuario
+  /// Returns average score across all metrics.
   double get averageScore => (volumeScore + toneScore + breathingScore) / 3;
 
-  /// Convierte el objeto a JSON para guardarlo en memoria
+  /// Converts model to JSON map for Firestore or local storage.
   Map<String, dynamic> toJson() => {
     'volumeScore': volumeScore,
     'toneScore': toneScore,
@@ -25,8 +25,17 @@ class ProgressModel {
     'lastUpdated': lastUpdated.toIso8601String(),
   };
 
-  /// Convierte desde JSON a un objeto ProgressModel
-  factory ProgressModel.fromJson(Map<String, dynamic> json) {
+  /// Creates model from Firestore (or local) JSON.
+  factory ProgressModel.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return ProgressModel(
+        volumeScore: 0,
+        toneScore: 0,
+        breathingScore: 0,
+        lastUpdated: DateTime.now(),
+      );
+    }
+
     return ProgressModel(
       volumeScore: (json['volumeScore'] ?? 0).toDouble(),
       toneScore: (json['toneScore'] ?? 0).toDouble(),
@@ -36,7 +45,7 @@ class ProgressModel {
     );
   }
 
-  /// Permite clonar el modelo actual con cambios puntuales
+  /// Creates a modified copy of the current model instance.
   ProgressModel copyWith({
     double? volumeScore,
     double? toneScore,

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../utils/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:math';
+import '../utils/colors.dart';
 import 'package:flutter/services.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -17,6 +19,9 @@ class _HomeScreenState extends State<HomeScreen>
   bool _haptics = true;
   bool _highContrast = false;
   double _textScale = 1.0;
+
+  String? userName;
+  bool loadingUser = true;
 
   final List<Map<String, dynamic>> _buttons = [
     {
@@ -54,6 +59,7 @@ class _HomeScreenState extends State<HomeScreen>
     )..repeat(reverse: true);
 
     _loadPreferences();
+    _loadUserData();
   }
 
   Future<void> _loadPreferences() async {
@@ -63,6 +69,44 @@ class _HomeScreenState extends State<HomeScreen>
       _highContrast = prefs.getBool('highContrast') ?? false;
       _textScale = prefs.getDouble('textScale') ?? 1.0;
     });
+  }
+
+  Future<void> _loadUserData() async {
+    try {
+      final authUser = FirebaseAuth.instance.currentUser;
+
+      if (authUser == null) {
+        setState(() {
+          userName = "Invitado";
+          loadingUser = false;
+        });
+        return;
+      }
+
+      final snap = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(authUser.uid)
+          .get();
+
+      setState(() {
+        userName = snap.data()?['firstName'] ?? 'Usuario';
+        loadingUser = false;
+      });
+    } catch (e) {
+      setState(() {
+        userName = "Usuario";
+        loadingUser = false;
+      });
+    }
+  }
+
+  Future<void> _logout() async {
+    await FirebaseAuth.instance.signOut();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+
+    if (!mounted) return;
+    Navigator.pushNamedAndRemoveUntil(context, '/login', (_) => false);
   }
 
   @override
@@ -114,14 +158,16 @@ class _HomeScreenState extends State<HomeScreen>
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const SizedBox(height: 20),
+
                   Text(
-                    "¡Hola! 👋",
+                    loadingUser ? "Cargando..." : "¡Hola, $userName!",
                     style: TextStyle(
                       fontSize: 28 * _textScale,
                       fontWeight: FontWeight.bold,
                       color: contrastColor,
                     ),
                   ),
+
                   Text(
                     "Elige una actividad para comenzar",
                     style: TextStyle(
@@ -129,7 +175,9 @@ class _HomeScreenState extends State<HomeScreen>
                       color: secondaryTextColor,
                     ),
                   ),
+
                   const SizedBox(height: 30),
+
                   Expanded(
                     child: GridView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -154,7 +202,31 @@ class _HomeScreenState extends State<HomeScreen>
                       },
                     ),
                   ),
-                  const SizedBox(height: 20),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    child: ElevatedButton.icon(
+                      onPressed: _logout,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white.withOpacity(0.85),
+                        foregroundColor: AppColors.red,
+                        minimumSize: const Size(200, 55),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        elevation: 6,
+                        shadowColor: AppColors.red.withOpacity(0.4),
+                      ),
+                      icon: const Icon(Icons.logout),
+                      label: const Text(
+                        "Cerrar sesión",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -226,7 +298,6 @@ class _HomeCard extends StatelessWidget {
   }
 }
 
-/// 🎨 Fondo animado tipo "respiración"
 class BreathingBackgroundPainter extends CustomPainter {
   final Animation<double> animation;
   final List<Color> colors;
@@ -241,25 +312,26 @@ class BreathingBackgroundPainter extends CustomPainter {
     final t = (animation.value * 2 * 3.1416);
     final waveHeight = 30 + 20 * (1 + sin(t)) / 2;
 
-    // Fondo base
     final gradient = LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
       colors: colors,
       stops: const [0.0, 0.5, 1.0],
     ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+
     paint.shader = gradient;
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint);
 
-    // Onda suave
     final path = Path();
     path.moveTo(0, size.height * 0.85);
+
     for (double x = 0; x <= size.width; x++) {
       final y =
           size.height * 0.85 +
           sin((x / size.width * 3.1416 * 2) + t) * waveHeight;
       path.lineTo(x, y);
     }
+
     path.lineTo(size.width, size.height);
     path.lineTo(0, size.height);
     path.close();

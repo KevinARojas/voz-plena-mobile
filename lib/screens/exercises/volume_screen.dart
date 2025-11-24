@@ -14,7 +14,7 @@ class VolumeScreen extends StatefulWidget {
 
 class _VolumeScreenState extends State<VolumeScreen> {
   bool _grabando = false;
-  bool _micListo = false; // ✅ Controla si el micrófono ya está listo
+  bool _micListo = false;
   double _amplitud = 0.0;
   double _puntajeVolumen = 0.0;
   double _amplitudSuavizada = 0.0;
@@ -28,17 +28,14 @@ class _VolumeScreenState extends State<VolumeScreen> {
     super.initState();
     AIService.init();
 
-    // ✅ Inicializa el micrófono antes de habilitar el botón
     Future.microtask(() async {
       try {
-        await Future.delayed(
-          const Duration(milliseconds: 800),
-        ); // pequeña espera
+        await Future.delayed(const Duration(milliseconds: 800));
         await _microfono.init();
         setState(() => _micListo = true);
-        print('🎤 Micrófono listo para usar');
+        print('Microphone ready for use');
       } catch (e) {
-        print('❌ Error al inicializar el micrófono: $e');
+        print('error initializing microphone: $e');
       }
     });
   }
@@ -99,11 +96,10 @@ class _VolumeScreenState extends State<VolumeScreen> {
     }
   }
 
-  /// 🎨 Color dinámico en tiempo real según volumen actual
   Color _colorPorNivel() {
-    if (_amplitud > 0.75) return AppColors.green; // volumen fuerte
-    if (_amplitud > 0.45) return AppColors.accent; // volumen medio
-    return AppColors.red; // volumen bajo
+    if (_amplitud > 0.75) return AppColors.green;
+    if (_amplitud > 0.45) return AppColors.accent;
+    return AppColors.red;
   }
 
   @override
@@ -146,7 +142,7 @@ class _VolumeScreenState extends State<VolumeScreen> {
                   style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
                 const SizedBox(height: 30),
-                // 🟢 Círculo con animación suave de color
+
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
                   height: 180,

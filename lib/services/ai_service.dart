@@ -5,7 +5,6 @@ class AIService {
   static Interpreter? _interpreter;
   static bool _isLoaded = false;
 
-  /// Inicializa el modelo si está disponible
   static Future<void> init() async {
     if (_isLoaded) return;
 
@@ -14,25 +13,23 @@ class AIService {
         'assets/model/voice_analyzer.tflite',
       );
       _isLoaded = true;
-      print("✅ Modelo IA cargado correctamente");
+      print("IA Model loaded successfully.");
     } catch (e) {
-      print("⚠️ No se pudo cargar el modelo: $e");
+      print("Error loading IA model: $e");
       _isLoaded = false;
     }
   }
 
-  /// Simula entrada aleatoria (solo si el modelo no se carga)
   static List<double> _generateInput() {
     final rnd = Random();
     return List.generate(60, (_) => rnd.nextDouble());
   }
 
-  /// Ejecuta la inferencia del modelo o simula si no está disponible
   static Future<List<double>> analyzeVoice() async {
     try {
       if (!_isLoaded || _interpreter == null) {
-        print("⚠️ Modelo no cargado, usando datos simulados");
-        // [volumen, tono, respiración] entre 0–1
+        print("Model not loaded, using simulated data");
+
         return [
           0.5 + Random().nextDouble() * 0.4,
           0.4 + Random().nextDouble() * 0.5,
@@ -47,7 +44,7 @@ class AIService {
       return List<double>.from(output[0]);
     } catch (e) {
       print('! Error en inferencia IA: $e');
-      // 🔁 Simulación si falla
+
       return [
         0.6 + Random().nextDouble() * 0.3,
         0.5 + Random().nextDouble() * 0.4,
@@ -56,7 +53,6 @@ class AIService {
     }
   }
 
-  /// Genera retroalimentación textual según resultados
   static String generateFeedback(List<double> results) {
     if (results.isEmpty) return "Sin datos de análisis";
 

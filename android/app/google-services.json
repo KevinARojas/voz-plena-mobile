@@ -1,0 +1,29 @@
+{
+    "project_info": {
+        "project_number": "500465007824",
+        "project_id": "voice-therapy-c55f6",
+        "storage_bucket": "voice-therapy-c55f6.firebasestorage.app"
+    },
+    "client": [
+        {
+            "client_info": {
+                "mobilesdk_app_id": "1:500465007824:android:8ab2a1e6dbeef2685cb2d5",
+                "android_client_info": {
+                    "package_name": "com.vozplena.app"
+                }
+            },
+            "oauth_client": [],
+            "api_key": [
+                {
+                    "current_key": "AIzaSyBSAMM07rkCt7CmMBI12NLzz7Zxyxrp2_4"
+                }
+            ],
+            "services": {
+                "appinvite_service": {
+                    "other_platform_oauth_client": []
+                }
+            }
+        }
+    ],
+    "configuration_version": "1"
+}

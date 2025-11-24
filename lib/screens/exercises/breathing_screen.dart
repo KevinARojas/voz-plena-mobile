@@ -17,7 +17,7 @@ class _BreathingScreenState extends State<BreathingScreen> {
   final ProgressService _progreso = ProgressService();
 
   bool _grabando = false;
-  bool _micListo = false; // ✅ bloquea el botón hasta que esté listo
+  bool _micListo = false;
   double _nivelRespiracion = 0.0;
   double _suavizado = 0.0;
   double _puntaje = 0.0;
@@ -28,7 +28,6 @@ class _BreathingScreenState extends State<BreathingScreen> {
     super.initState();
     AIService.init();
 
-    // ✅ Inicializar el micrófono antes de permitir grabar
     Future.microtask(() async {
       try {
         await Future.delayed(const Duration(milliseconds: 800));
@@ -95,12 +94,10 @@ class _BreathingScreenState extends State<BreathingScreen> {
     }
   }
 
-  /// 🎨 Color dinámico según nivel de respiración
   Color _colorPorRespiracion() {
-    if (_nivelRespiracion > 0.75)
-      return AppColors.green; // respiración profunda
-    if (_nivelRespiracion > 0.4) return AppColors.accent; // respiración media
-    return AppColors.red; // respiración débil
+    if (_nivelRespiracion > 0.75) return AppColors.green;
+    if (_nivelRespiracion > 0.4) return AppColors.accent;
+    return AppColors.red;
   }
 
   @override
@@ -144,7 +141,6 @@ class _BreathingScreenState extends State<BreathingScreen> {
                 ),
                 const SizedBox(height: 30),
 
-                // 🫁 Círculo dinámico que se expande con la respiración
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 400),
                   height: 200 + (_nivelRespiracion * 120),
@@ -237,7 +233,6 @@ class _BreathingScreenState extends State<BreathingScreen> {
   }
 }
 
-/// 🎚 Gráfico de barras de respiración
 class _BarrasResp extends CustomPainter {
   final List<double> values;
   _BarrasResp({required this.values});

@@ -45,6 +45,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
 
     const duration = Duration(milliseconds: 45);
     int index = 0;
+
     _timer = Timer.periodic(duration, (timer) {
       if (index < widget.content.length) {
         setState(() => _displayedText += widget.content[index]);
@@ -63,22 +64,24 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
     });
 
     try {
-      // 🧠 IA — simula análisis de tono/lectura
+      // AI processing for reading analysis
       final aiResult = await AIService.analyzeVoice();
       final toneScore = aiResult.length > 1 ? aiResult[1] : 0.6;
 
-      // 💾 Guarda progreso y sesión
+      // Save progress using the service
       await _progressService.updateMetric('tone', toneScore);
+
+      // Log session for analytics or history
       await SessionLogger.logSession(tipo: 'story', valores: [toneScore]);
 
-      // 💬 Feedback textual IA
+      // Generate textual feedback
       final feedback = AIService.generateFeedback(aiResult);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              "Lectura completada 🗣️ — ${(toneScore * 100).toStringAsFixed(0)}%\n$feedback",
+              "Lectura completada — ${(toneScore * 100).toStringAsFixed(0)}%\n$feedback",
               style: const TextStyle(color: Colors.white),
             ),
             backgroundColor: AppColors.primary,
@@ -128,83 +131,102 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
           ),
         ),
         child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.asset(
-                    widget.imagePath,
-                    height: 200,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  widget.exerciseHint,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    color: Colors.white70,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Image.asset(
+                              widget.imagePath,
+                              height: 200,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
 
-                // 🧩 Cuento con efecto "máquina de escribir"
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.95),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    _displayedText.isEmpty
-                        ? "Presiona 'Leer cuento' para comenzar."
-                        : _displayedText,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: AppColors.textDark,
-                      height: 1.5,
+                          const SizedBox(height: 20),
+
+                          Text(
+                            widget.exerciseHint,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.white70,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.95),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              _displayedText.isEmpty
+                                  ? "Presiona 'Leer cuento' para comenzar."
+                                  : _displayedText,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: AppColors.textDark,
+                                height: 1.5,
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 30),
+
+                          ElevatedButton.icon(
+                            onPressed: _startReading,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: _isPlaying
+                                  ? AppColors.red
+                                  : _isCompleted
+                                  ? AppColors.green
+                                  : AppColors.primary,
+                              minimumSize: const Size(double.infinity, 60),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                            icon: Icon(
+                              _isPlaying
+                                  ? Icons.stop
+                                  : _isCompleted
+                                  ? Icons.check_circle
+                                  : Icons.menu_book,
+                              color: Colors.white,
+                            ),
+                            label: Text(
+                              _isPlaying
+                                  ? "Detener"
+                                  : _isCompleted
+                                  ? "Completado"
+                                  : "Leer cuento",
+                              style: const TextStyle(
+                                fontSize: 20,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+
+                          const Spacer(),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-
-                const SizedBox(height: 30),
-
-                ElevatedButton.icon(
-                  onPressed: _startReading,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _isPlaying
-                        ? AppColors.red
-                        : _isCompleted
-                        ? AppColors.green
-                        : AppColors.primary,
-                    minimumSize: const Size(double.infinity, 60),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  icon: Icon(
-                    _isPlaying
-                        ? Icons.stop
-                        : _isCompleted
-                        ? Icons.check_circle
-                        : Icons.menu_book,
-                    color: Colors.white,
-                  ),
-                  label: Text(
-                    _isPlaying
-                        ? "Detener"
-                        : _isCompleted
-                        ? "Completado"
-                        : "Leer cuento",
-                    style: const TextStyle(fontSize: 20, color: Colors.white),
-                  ),
-                ),
-              ],
-            ),
+              );
+            },
           ),
         ),
       ),
